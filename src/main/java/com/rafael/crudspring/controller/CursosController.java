@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rafael.crudspring.dto.CourseDTO;
 import com.rafael.crudspring.exception.RecordNotFoundException;
-import com.rafael.crudspring.model.Course;
 import com.rafael.crudspring.service.CourseService;
 
 import jakarta.validation.Valid;
@@ -36,14 +36,14 @@ public class CursosController {
     }
 
     @GetMapping
-    public List<Course> list() {
+    public List<CourseDTO> list() {
         return courseService.list();
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Course create(@RequestBody @Valid Course course) {
-        return courseService.create(course);
+    public CourseDTO create(@RequestBody @Valid @NotNull CourseDTO courseDto) {
+        return courseService.create(courseDto);
     }
 
     @GetMapping("/{id}")
@@ -56,21 +56,25 @@ public class CursosController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable @NotNull @Positive Long id, @RequestBody @Valid Course entity) {
+    public ResponseEntity<Object> update(@PathVariable @NotNull @Positive Long id,
+            @RequestBody @Valid @NotNull CourseDTO courseDTO) {
         try {
-            return ResponseEntity.ok(courseService.update(id, entity));
+            return ResponseEntity.ok(courseService.update(id, courseDTO));
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable @NotNull @Positive Long id) {
+    public ResponseEntity<String> delete(@PathVariable @NotNull @Positive Long id) {
         try {
             courseService.delete(id);
+            return new ResponseEntity<>("O curso foi deletado.", HttpStatus.NO_CONTENT);
         } catch (RecordNotFoundException e) {
-            e.printStackTrace();
+            StringBuilder message = new StringBuilder("O curso com id ");
+            message.append(id);
+            message.append(" não foi encontrado");
+            return new ResponseEntity<>(message.toString(), HttpStatus.NOT_FOUND);
         }
     }
 }

@@ -12,13 +12,14 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Builder;
 import lombok.Data;
 
-@Data
-@Entity
 // Descomentar a linha abaixo caso já exista uma tabela Cursos criada
 // @Table(name = "Cursos")
+@Entity
 @SQLDelete(sql="UPDATE Course SET status = 'Inativo' WHERE id = ?")
+@Data
 @Where(clause = "status = 'Ativo'")
 public class Course {
 
