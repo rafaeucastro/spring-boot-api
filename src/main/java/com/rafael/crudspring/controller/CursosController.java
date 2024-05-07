@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rafael.crudspring.exception.RecordNotFoundException;
 import com.rafael.crudspring.model.Course;
 import com.rafael.crudspring.service.CourseService;
 
@@ -46,23 +47,30 @@ public class CursosController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Course> findById(@PathVariable @NotNull @Positive Long id) {
-        return courseService.findById(id).map(recordFound -> ResponseEntity.ok().body(recordFound))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Object> findById(@PathVariable @NotNull @Positive Long id) {
+        try {
+            return ResponseEntity.ok(courseService.findById(id));
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Course> update(@PathVariable @NotNull @Positive Long id, @RequestBody @Valid Course entity) {
-        return courseService.update(id, entity)
-                .map(recordFound -> ResponseEntity.ok().body(recordFound))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Object> update(@PathVariable @NotNull @Positive Long id, @RequestBody @Valid Course entity) {
+        try {
+            return ResponseEntity.ok(courseService.update(id, entity));
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable @NotNull @Positive Long id) {
-        if (courseService.delete(id)) {
-            return ResponseEntity.noContent().<Void>build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable @NotNull @Positive Long id) {
+        try {
+            courseService.delete(id);
+        } catch (RecordNotFoundException e) {
+            e.printStackTrace();
         }
-        return ResponseEntity.notFound().build();
     }
 }
