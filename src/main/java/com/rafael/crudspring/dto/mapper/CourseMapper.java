@@ -1,5 +1,6 @@
 package com.rafael.crudspring.dto.mapper;
 
+import com.rafael.crudspring.enums.Category;
 import org.springframework.stereotype.Component;
 
 import com.rafael.crudspring.dto.CourseDTO;
@@ -11,7 +12,7 @@ public class CourseMapper {
         if(course == null){
             return null;
         }
-        return new CourseDTO(course.getId(), course.getName(), course.getCategory());
+        return new CourseDTO(course.getId(), course.getName(), "Front-end");
     }
     
     public Course fromDTO(CourseDTO dto) {
@@ -24,7 +25,18 @@ public class CourseMapper {
             course.setId(dto.id());
         }
         course.setName(dto.name());
-        course.setCategory(dto.category());
+        //TODO: Use a mapper for category
+        course.setCategory(convertCategoryValue(dto.category()));
         return course;
+    }
+
+    public Category convertCategoryValue(String value) {
+        if(value == null) return null;
+
+        return switch(value){
+            case "Front-end" -> Category.FRONTEND;
+            case "Back-end" -> Category.BACKEND;
+            default -> throw new IllegalArgumentException("Invalid value: " + value);
+        };
     }
 }
