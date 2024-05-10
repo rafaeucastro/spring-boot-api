@@ -1,5 +1,6 @@
 package com.rafael.crudspring;
 
+import com.rafael.crudspring.model.Lesson;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,6 +25,12 @@ public class CrudSpringApplication {
 			Course c = new Course();
 			c.setName("Angular com Spring");
 			c.setCategory(Category.BACKEND);
+
+			Lesson l = new Lesson();
+			l.setName("Introdução");
+			l.setYoutubeUrl("https://you");
+			l.setCourse(c);
+			c.getLessons().add(l);
 
 			courseRepository.save(c);
 		};
