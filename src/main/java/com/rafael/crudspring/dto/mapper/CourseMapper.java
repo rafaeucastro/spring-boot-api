@@ -1,14 +1,13 @@
 package com.rafael.crudspring.dto.mapper;
 
-import com.rafael.crudspring.enums.Category;
-
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.springframework.stereotype.Component;
 
 import com.rafael.crudspring.dto.CourseDTO;
+import com.rafael.crudspring.enums.Category;
 import com.rafael.crudspring.model.Course;
+import com.rafael.crudspring.model.Lesson;
 
 @Component
 public class CourseMapper {
@@ -32,6 +31,16 @@ public class CourseMapper {
         course.setName(dto.name());
         //TODO: Use a mapper for category
         course.setCategory(convertCategoryValue(dto.category()));
+        
+        List<Lesson> lessons = dto.lessons().stream().map(lessonDTO -> {
+            var lesson = new Lesson();
+            lesson.setId(lessonDTO.id());
+            lesson.setName(lessonDTO.name());
+            lesson.setYoutubeUrl(lessonDTO.youtubeUrl());
+            lesson.setCourse(course);
+            return lesson;
+        }).toList();
+        course.setLessons(lessons);
         return course;
     }
 

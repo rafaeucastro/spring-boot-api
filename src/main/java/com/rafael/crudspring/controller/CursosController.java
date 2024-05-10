@@ -26,7 +26,6 @@ import jakarta.validation.constraints.Positive;
 @Validated
 @RestController
 @RequestMapping("/api/courses")
-// @AllArgsConstructor // Gera o construtor automaticamente
 public class CursosController {
 
     private final CourseService courseService;
@@ -47,34 +46,20 @@ public class CursosController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> findById(@PathVariable @NotNull @Positive Long id) {
-        try {
-            return ResponseEntity.ok(courseService.findById(id));
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    public CourseDTO findById(@PathVariable @NotNull @Positive Long id) throws RecordNotFoundException {
+        return courseService.findById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> update(@PathVariable @NotNull @Positive Long id,
-            @RequestBody @Valid @NotNull CourseDTO courseDTO) {
-        try {
-            return ResponseEntity.ok(courseService.update(id, courseDTO));
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    public CourseDTO update(@PathVariable @NotNull @Positive Long id,
+            @RequestBody @Valid @NotNull CourseDTO courseDTO) throws RecordNotFoundException {
+        return courseService.update(id, courseDTO);
+
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable @NotNull @Positive Long id) {
-        try {
-            courseService.delete(id);
-            return new ResponseEntity<>("O curso foi deletado.", HttpStatus.NO_CONTENT);
-        } catch (RecordNotFoundException e) {
-            StringBuilder message = new StringBuilder("O curso com id ");
-            message.append(id);
-            message.append(" não foi encontrado");
-            return new ResponseEntity<>(message.toString(), HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<String> delete(@PathVariable @NotNull @Positive Long id) throws RecordNotFoundException {
+        courseService.delete(id);
+        return new ResponseEntity<>("O curso foi deletado.", HttpStatus.NO_CONTENT);
     }
 }

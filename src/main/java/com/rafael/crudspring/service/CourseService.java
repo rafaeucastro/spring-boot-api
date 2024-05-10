@@ -43,8 +43,11 @@ public class CourseService {
             throws RecordNotFoundException {
         return courseRepository.findById(id)
                 .map(recordFound -> {
+                    var course = courseMapper.fromDTO(courseDTO);
                     recordFound.setCategory(courseMapper.convertCategoryValue(courseDTO.category()));
                     recordFound.setName(courseDTO.name());
+                    recordFound.getLessons().clear();
+                    course.getLessons().forEach(recordFound.getLessons()::add);
                     return courseRepository.save(recordFound);
                 })
                 .map(courseMapper::toDTO)
